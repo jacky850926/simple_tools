@@ -1,16 +1,25 @@
-# Simple JSON Editor
+# Simple Developer Tools
 
-A minimal, AI-ready JSON editor built with Next.js, TailwindCSS, and Monaco Editor.
+A collection of privacy-focused, client-side developer tools built with Next.js 14, TailwindCSS, and Monaco Editor.
 
-## Features
+## 🛠️ Tools Included
 
-- **Raw Input & Formatted Output**: Two-panel layout for easy editing.
-- **Monaco Editor**: Professional code editing experience with syntax highlighting.
-- **Validation**: Real-time syntax checking and manual validation.
-- **Tools**: Format, Minify, Copy to Clipboard, and Download.
-- **Privacy**: 100% client-side processing. No data leaves your browser.
+### 1. JSON Editor (`/json-editor`)
+A powerful, real-time JSON editing and formatting tool.
+- **Dual-Pane Interface**: Raw input on the left, formatted/editable output on the right.
+- **Monaco Editor**: Professional code editing experience with syntax highlighting and error detection.
+- **Features**: 
+  - Format & Minify JSON
+  - Real-time Validation
+  - Copy to Clipboard & Download File
+- **Privacy**: 100% client-side processing. Your data never leaves the browser.
 
-## Getting Started
+### 2. Image Converter (`/image-converter`)
+A simple tool to convert HEIC images to standard web formats.
+- **HEIC to JPG/PNG**: Easily convert Apple's HEIC format to widely supported formats.
+- **Client-Side Conversion**: Uses `heic2any` to process images directly in your browser without uploading them to a server.
+
+## 🚀 Getting Started
 
 First, run the development server:
 
@@ -20,22 +29,14 @@ npm run dev
 
 Open [http://localhost:3002](http://localhost:3002) with your browser to see the result.
 
+## 💻 Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: TailwindCSS
+- **Editor**: Monaco Editor (`@monaco-editor/react`)
+- **Image Processing**: `heic2any`
+- **Icons**: Lucide React
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Deployment
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
