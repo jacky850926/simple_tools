@@ -40,3 +40,41 @@ Open [http://localhost:3002](http://localhost:3002) with your browser to see the
 ## 📦 Deployment
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+
+## 🐳 Docker Support
+
+You can run this application easily using Docker.
+
+### One-Click Start
+Run the helper script to build and start the container:
+```bash
+./start.sh
+```
+The app will be available at [http://localhost:3002](http://localhost:3002).
+
+### Manual Commands
+```bash
+# Build and start
+docker-compose up -d --build
+
+# Stop
+docker-compose down
+```
+
+### Offline Distribution (Save/Load Image)
+To run this app on another machine without building from source:
+
+1. **Export Image** (on source machine):
+   ```bash
+   docker save -o simple_tools.tar simple_tools
+   ```
+2. **Transfer** the `simple_tools.tar` file to the target machine.
+3. **Import Image** (on target machine):
+   ```bash
+   docker load -i simple_tools.tar
+   ```
+4. **Run Container** (on target machine):
+   ```bash
+   # Run on port 3002 (or change 3002 to any port you like)
+   docker run -d --restart always -p 3002:3000 simple_tools
+   ```
