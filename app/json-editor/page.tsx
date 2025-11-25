@@ -15,6 +15,7 @@ import {
   X,
   Clock
 } from "lucide-react";
+import { useTheme } from "../components/ThemeProvider";
 
 interface HistoryItem {
   id: string;
@@ -23,6 +24,7 @@ interface HistoryItem {
 }
 
 export default function Home() {
+  const { theme } = useTheme();
   const [rawInput, setRawInput] = useState("");
   const [formattedOutput, setFormattedOutput] = useState("");
   const [error, setError] = useState<{ message: string; line?: number; column?: number } | null>(null);
@@ -178,22 +180,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-200 font-sans selection:bg-blue-500/30 overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-200 font-sans selection:bg-blue-500/30 overflow-hidden transition-colors duration-300">
       {/* Header */}
-      <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-10">
+      <header className="border-b border-gray-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
               <FileJson className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               JSON Editor
             </h1>
           </div>
-          <div className="flex items-center gap-4 text-sm text-neutral-400">
+          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-neutral-400">
             <button
               onClick={() => setIsHistoryOpen(true)}
-              className="flex items-center gap-2 hover:text-white transition-colors"
+              className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <History className="w-4 h-4" />
               <span>History</span>
@@ -206,7 +208,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto p-4 h-[calc(100vh-4rem)] flex flex-col gap-4 relative">
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 bg-neutral-900/50 p-3 rounded-xl border border-neutral-800 backdrop-blur-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-white/50 dark:bg-neutral-900/50 p-3 rounded-xl border border-gray-200 dark:border-neutral-800 backdrop-blur-sm transition-colors duration-300">
           <div className="flex items-center gap-2">
             <button
               onClick={formatJson}
@@ -227,29 +229,29 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <button
               onClick={minifyJson}
-              className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
               title="Minify"
             >
               <Minimize2 className="w-5 h-5" />
             </button>
             <button
               onClick={downloadJson}
-              className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
               title="Download"
             >
               <Download className="w-5 h-5" />
             </button>
             <button
               onClick={copyToClipboard}
-              className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
               title="Copy to Clipboard"
             >
               <Copy className="w-5 h-5" />
             </button>
-            <div className="w-px h-6 bg-neutral-800 mx-1" />
+            <div className="w-px h-6 bg-gray-200 dark:bg-neutral-800 mx-1" />
             <button
               onClick={clearAll}
-              className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
+              className="p-2 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               title="Clear All"
             >
               <Trash2 className="w-5 h-5" />
@@ -263,35 +265,36 @@ export default function Home() {
           {/* Left Panel: Raw Input */}
           <div className="flex flex-col gap-2 min-h-0">
             <div className="flex items-center justify-between px-2">
-              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Raw Input</label>
-              <span className="text-xs text-neutral-600">{rawInput.length} chars</span>
+              <label className="text-xs font-semibold text-gray-500 dark:text-neutral-500 uppercase tracking-wider">Raw Input</label>
+              <span className="text-xs text-gray-600 dark:text-neutral-600">{rawInput.length} chars</span>
             </div>
             <div className="flex-1 relative group">
               <textarea
                 value={rawInput}
                 onChange={(e) => setRawInput(e.target.value)}
                 placeholder="Paste your raw JSON here..."
-                className="w-full h-full bg-neutral-900/50 border border-neutral-800 rounded-xl p-4 font-mono text-sm text-neutral-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent resize-none transition-all placeholder:text-neutral-700"
+                className="w-full h-full bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-4 font-mono text-sm text-gray-900 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-neutral-700"
                 spellCheck={false}
               />
-              <div className="absolute inset-0 rounded-xl pointer-events-none ring-1 ring-inset ring-white/5 group-hover:ring-white/10 transition-all" />
+              <div className="absolute inset-0 rounded-xl pointer-events-none ring-1 ring-inset ring-gray-900/5 dark:ring-white/5 group-hover:ring-gray-900/10 dark:group-hover:ring-white/10 transition-all" />
             </div>
           </div>
 
           {/* Right Panel: Monaco Editor */}
           <div className="flex flex-col gap-2 min-h-0">
             <div className="flex items-center justify-between px-2">
-              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Formatted Editor</label>
-              {formattedOutput && <span className="text-xs text-neutral-600">Ready</span>}
+              <label className="text-xs font-semibold text-gray-500 dark:text-neutral-500 uppercase tracking-wider">Formatted Editor</label>
+              {formattedOutput && <span className="text-xs text-gray-600 dark:text-neutral-600">Ready</span>}
             </div>
-            <div className="flex-1 border border-neutral-800 rounded-xl overflow-hidden bg-[#1e1e1e] shadow-2xl relative">
+            <div className="flex-1 border border-gray-200 dark:border-neutral-800 rounded-xl overflow-hidden bg-white dark:bg-[#1e1e1e] shadow-2xl relative">
               <Editor
+                key={theme} // Force re-mount on theme change
                 height="100%"
                 defaultLanguage="json"
                 value={formattedOutput}
                 onChange={(value) => setFormattedOutput(value || "")}
                 onMount={handleEditorDidMount}
-                theme="vs-dark"
+                theme={theme === 'dark' ? "vs-dark" : "light"}
                 options={{
                   minimap: { enabled: false },
                   fontSize: 14,
@@ -310,27 +313,27 @@ export default function Home() {
         {isHistoryOpen && (
           <div className="absolute inset-0 z-50 flex justify-end">
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+              className="absolute inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm transition-opacity"
               onClick={() => setIsHistoryOpen(false)}
             />
-            <div className="relative w-full max-w-md bg-neutral-900 border-l border-neutral-800 shadow-2xl h-full flex flex-col animate-in slide-in-from-right duration-300">
-              <div className="p-4 border-b border-neutral-800 flex items-center justify-between">
+            <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 border-l border-gray-200 dark:border-neutral-800 shadow-2xl h-full flex flex-col animate-in slide-in-from-right duration-300">
+              <div className="p-4 border-b border-gray-200 dark:border-neutral-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <History className="w-5 h-5 text-blue-400" />
-                  <h2 className="font-bold text-lg">History</h2>
+                  <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <h2 className="font-bold text-lg text-gray-900 dark:text-white">History</h2>
                 </div>
                 <div className="flex items-center gap-2">
                   {history.length > 0 && (
                     <button
                       onClick={clearHistory}
-                      className="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-900/20 transition-colors"
+                      className="text-xs text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
                       Clear All
                     </button>
                   )}
                   <button
                     onClick={() => setIsHistoryOpen(false)}
-                    className="p-1 hover:bg-neutral-800 rounded-lg transition-colors"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors text-gray-500 dark:text-neutral-400"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -339,7 +342,7 @@ export default function Home() {
 
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {history.length === 0 ? (
-                  <div className="text-center text-neutral-500 py-10">
+                  <div className="text-center text-gray-500 dark:text-neutral-500 py-10">
                     <Clock className="w-12 h-12 mx-auto mb-3 opacity-20" />
                     <p>No history yet</p>
                     <p className="text-sm mt-1">Format or validate JSON to save it here</p>
@@ -349,17 +352,17 @@ export default function Home() {
                     <button
                       key={item.id}
                       onClick={() => loadHistoryItem(item)}
-                      className="w-full text-left bg-neutral-800/50 hover:bg-neutral-800 border border-neutral-700/50 hover:border-blue-500/30 rounded-lg p-3 transition-all group"
+                      className="w-full text-left bg-gray-50 dark:bg-neutral-800/50 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-700/50 hover:border-blue-500/30 rounded-lg p-3 transition-all group"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-neutral-500 font-mono">
+                        <span className="text-xs text-gray-500 dark:text-neutral-500 font-mono">
                           {new Date(item.timestamp).toLocaleString()}
                         </span>
-                        <span className="text-xs bg-neutral-700/50 px-1.5 py-0.5 rounded text-neutral-400">
+                        <span className="text-xs bg-gray-200 dark:bg-neutral-700/50 px-1.5 py-0.5 rounded text-gray-600 dark:text-neutral-400">
                           {item.content.length} chars
                         </span>
                       </div>
-                      <pre className="text-xs text-neutral-300 font-mono line-clamp-3 opacity-80 group-hover:opacity-100">
+                      <pre className="text-xs text-gray-700 dark:text-neutral-300 font-mono line-clamp-3 opacity-80 group-hover:opacity-100">
                         {item.content.slice(0, 300)}
                       </pre>
                     </button>
@@ -375,18 +378,18 @@ export default function Home() {
           <div className={`
             fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md border flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300
             ${error
-              ? "bg-red-950/80 border-red-500/30 text-red-200"
-              : "bg-emerald-950/80 border-emerald-500/30 text-emerald-200"
+              ? "bg-red-50 dark:bg-red-950/80 border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-200"
+              : "bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200"
             }
           `}>
             {error ? (
               <>
-                <AlertCircle className="w-5 h-5 text-red-400" />
+                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                 <span className="font-medium">{error.message}</span>
               </>
             ) : (
               <>
-                <Check className="w-5 h-5 text-emerald-400" />
+                <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                 <span className="font-medium">{successMessage}</span>
               </>
             )}

@@ -149,19 +149,19 @@ export default function ImageConverter() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-neutral-200 font-sans p-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-200 font-sans p-8 transition-colors duration-300">
             <div className="max-w-5xl mx-auto flex flex-col gap-8">
 
                 {/* Header */}
-                <div className="flex items-center gap-4 border-b border-neutral-800 pb-6">
+                <div className="flex items-center gap-4 border-b border-gray-200 dark:border-neutral-800 pb-6 transition-colors duration-300">
                     <div className="p-3 bg-purple-600 rounded-xl shadow-lg shadow-purple-500/20">
                         <ImageIcon className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                             Image Converter
                         </h1>
-                        <p className="text-neutral-400 mt-1">
+                        <p className="text-gray-500 dark:text-neutral-400 mt-1">
                             Convert HEIC, PNG, JPG to optimized JPG format.
                         </p>
                     </div>
@@ -180,7 +180,7 @@ export default function ImageConverter() {
                 border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group
                 ${selectedFile
                                     ? "border-purple-500/50 bg-purple-500/5"
-                                    : "border-neutral-700 hover:border-purple-500/50 hover:bg-neutral-900"
+                                    : "border-gray-300 dark:border-neutral-700 hover:border-purple-500/50 hover:bg-gray-100 dark:hover:bg-neutral-900"
                                 }
               `}
                         >
@@ -191,26 +191,26 @@ export default function ImageConverter() {
                                 accept=".jpg,.jpeg,.png,.heic"
                                 className="hidden"
                             />
-                            <div className="p-4 bg-neutral-800 rounded-full group-hover:scale-110 transition-transform">
-                                <Upload className="w-8 h-8 text-purple-400" />
+                            <div className="p-4 bg-gray-100 dark:bg-neutral-800 rounded-full group-hover:scale-110 transition-transform">
+                                <Upload className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="text-center">
-                                <p className="font-medium text-neutral-200">Click to upload</p>
-                                <p className="text-sm text-neutral-500 mt-1">HEIC, PNG, JPG supported</p>
+                                <p className="font-medium text-gray-900 dark:text-neutral-200">Click to upload</p>
+                                <p className="text-sm text-gray-500 dark:text-neutral-500 mt-1">HEIC, PNG, JPG supported</p>
                             </div>
                         </div>
 
                         {/* Settings Panel */}
-                        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 backdrop-blur-sm">
+                        <div className="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-2xl p-6 backdrop-blur-sm transition-colors duration-300">
                             <div className="flex items-center gap-2 mb-6">
-                                <Settings className="w-5 h-5 text-purple-400" />
-                                <h2 className="font-semibold">Compression Settings</h2>
+                                <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                <h2 className="font-semibold text-gray-900 dark:text-white">Compression Settings</h2>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-sm text-neutral-400">Quality</label>
-                                    <span className="text-sm font-mono text-purple-400">{quality}%</span>
+                                    <label className="text-sm text-gray-500 dark:text-neutral-400">Quality</label>
+                                    <span className="text-sm font-mono text-purple-600 dark:text-purple-400">{quality}%</span>
                                 </div>
                                 <input
                                     type="range"
@@ -218,9 +218,9 @@ export default function ImageConverter() {
                                     max="100"
                                     value={quality}
                                     onChange={(e) => setQuality(Number(e.target.value))}
-                                    className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                    className="w-full h-2 bg-gray-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
                                 />
-                                <p className="text-xs text-neutral-500">
+                                <p className="text-xs text-gray-500 dark:text-neutral-500">
                                     Lower quality = smaller file size.
                                 </p>
                             </div>
@@ -231,7 +231,7 @@ export default function ImageConverter() {
                                 className={`
                   w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all
                   ${!selectedFile
-                                        ? "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+                                        ? "bg-gray-200 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 cursor-not-allowed"
                                         : "bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-900/20 active:scale-95"
                                     }
                 `}
@@ -249,13 +249,13 @@ export default function ImageConverter() {
 
                         {/* File Info */}
                         {fileInfo && (
-                            <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-4 flex items-center gap-3">
-                                <div className="p-2 bg-neutral-800 rounded-lg">
-                                    <FileImage className="w-5 h-5 text-neutral-400" />
+                            <div className="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-2xl p-4 flex items-center gap-3 transition-colors duration-300">
+                                <div className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+                                    <FileImage className="w-5 h-5 text-gray-500 dark:text-neutral-400" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">{fileInfo.name}</p>
-                                    <p className="text-xs text-neutral-500">{formatSize(fileInfo.size)} • {fileInfo.type}</p>
+                                    <p className="text-sm font-medium truncate text-gray-900 dark:text-white">{fileInfo.name}</p>
+                                    <p className="text-xs text-gray-500 dark:text-neutral-500">{formatSize(fileInfo.size)} • {fileInfo.type}</p>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -264,7 +264,7 @@ export default function ImageConverter() {
                                         setConvertedUrl(null);
                                         setFileInfo(null);
                                     }}
-                                    className="p-1 hover:bg-neutral-800 rounded text-neutral-500 hover:text-red-400 transition-colors"
+                                    className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded text-gray-500 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -275,14 +275,14 @@ export default function ImageConverter() {
                     {/* Right Column: Preview & Result */}
                     <div className="lg:col-span-2 flex flex-col gap-6">
                         {error && (
-                            <div className="bg-red-950/50 border border-red-500/20 text-red-200 p-4 rounded-xl flex items-center gap-3">
-                                <AlertCircle className="w-5 h-5 text-red-400" />
+                            <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-200 p-4 rounded-xl flex items-center gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                                 {error}
                             </div>
                         )}
 
                         {!previewUrl ? (
-                            <div className="flex-1 min-h-[400px] bg-neutral-900/30 border-2 border-dashed border-neutral-800 rounded-2xl flex flex-col items-center justify-center text-neutral-600">
+                            <div className="flex-1 min-h-[400px] bg-gray-100 dark:bg-neutral-900/30 border-2 border-dashed border-gray-300 dark:border-neutral-800 rounded-2xl flex flex-col items-center justify-center text-gray-500 dark:text-neutral-600 transition-colors duration-300">
                                 <ImageIcon className="w-16 h-16 opacity-20 mb-4" />
                                 <p>Upload an image to see preview</p>
                             </div>
@@ -291,12 +291,12 @@ export default function ImageConverter() {
                                 {/* Original */}
                                 <div className="flex flex-col gap-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-neutral-400">Original</span>
-                                        <span className="text-xs bg-neutral-800 px-2 py-1 rounded text-neutral-400">
+                                        <span className="text-sm font-medium text-gray-500 dark:text-neutral-400">Original</span>
+                                        <span className="text-xs bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded text-gray-500 dark:text-neutral-400">
                                             {fileInfo ? formatSize(fileInfo.size) : ''}
                                         </span>
                                     </div>
-                                    <div className="relative aspect-square bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800">
+                                    <div className="relative aspect-square bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-800 transition-colors duration-300">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={previewUrl}
@@ -309,9 +309,9 @@ export default function ImageConverter() {
                                 {/* Converted */}
                                 <div className="flex flex-col gap-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-purple-400">Converted Output</span>
+                                        <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Converted Output</span>
                                         {convertedInfo && (
-                                            <span className="text-xs bg-purple-900/30 text-purple-300 px-2 py-1 rounded border border-purple-500/20">
+                                            <span className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-1 rounded border border-purple-200 dark:border-purple-500/20">
                                                 {formatSize(convertedInfo.size)}
                                                 {fileInfo && (
                                                     <span className="ml-1 opacity-70">
@@ -321,7 +321,7 @@ export default function ImageConverter() {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="relative aspect-square bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center">
+                                    <div className="relative aspect-square bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-800 flex items-center justify-center transition-colors duration-300">
                                         {convertedUrl ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img
@@ -330,7 +330,7 @@ export default function ImageConverter() {
                                                 className="w-full h-full object-contain"
                                             />
                                         ) : (
-                                            <div className="text-neutral-600 text-sm text-center px-4">
+                                            <div className="text-gray-500 dark:text-neutral-600 text-sm text-center px-4">
                                                 {isProcessing ? "Processing..." : "Click 'Convert' to see result"}
                                             </div>
                                         )}

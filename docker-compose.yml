@@ -2,7 +2,8 @@ version: '3'
 
 services:
   web:
-    container_name: simple_tools
+    container_name: simple_tools_v1
+    image: simple_tools:v1
     build:
       context: .
       dockerfile: Dockerfile
