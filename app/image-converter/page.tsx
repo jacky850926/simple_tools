@@ -12,7 +12,10 @@ import {
     FileImage
 } from "lucide-react";
 
+import { useTheme } from "../components/ThemeProvider";
+
 export default function ImageConverter() {
+    const { theme } = useTheme();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [convertedUrl, setConvertedUrl] = useState<string | null>(null);
@@ -64,9 +67,6 @@ export default function ImageConverter() {
                 const url = URL.createObjectURL(Array.isArray(blob) ? blob[0] : blob);
                 setPreviewUrl(url);
                 setIsProcessing(false);
-                // Auto convert to apply current quality settings properly if needed, 
-                // but heic2any already did it. Let's just treat this as the "source" for now.
-                // Actually, for consistency, let's just show preview.
             } else {
                 // Standard images
                 const url = URL.createObjectURL(file);
@@ -85,8 +85,6 @@ export default function ImageConverter() {
         setError(null);
 
         try {
-            // If it's already a blob url (from HEIC conversion or file selection)
-            // We draw it to canvas to apply JPEG compression
             const img = new Image();
             img.src = previewUrl!;
 
@@ -131,7 +129,6 @@ export default function ImageConverter() {
 
         const a = document.createElement('a');
         a.href = convertedUrl;
-        // Use original name but change extension
         const originalName = fileInfo?.name || 'image';
         const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.')) || originalName;
         a.download = `${nameWithoutExt}_converted.jpg`;
@@ -149,7 +146,13 @@ export default function ImageConverter() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-200 font-sans p-8 transition-colors duration-300">
+        <div
+            className="min-h-screen font-sans p-8 transition-colors duration-300"
+            style={{
+                backgroundColor: theme === 'dark' ? '#0a0a0a' : '#f9fafb',
+                color: theme === 'dark' ? '#e5e5e5' : '#111827'
+            }}
+        >
             <div className="max-w-5xl mx-auto flex flex-col gap-8">
 
                 {/* Header */}
@@ -180,9 +183,13 @@ export default function ImageConverter() {
                 border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group
                 ${selectedFile
                                     ? "border-purple-500/50 bg-purple-500/5"
-                                    : "border-gray-300 dark:border-neutral-700 hover:border-purple-500/50 hover:bg-gray-100 dark:hover:bg-neutral-900"
+                                    : "hover:border-purple-500/50"
                                 }
               `}
+                            style={{
+                                borderColor: selectedFile ? undefined : (theme === 'dark' ? '#404040' : '#d1d5db'),
+                                backgroundColor: selectedFile ? undefined : (theme === 'dark' ? 'transparent' : '#f3f4f6'),
+                            }}
                         >
                             <input
                                 type="file"
@@ -191,25 +198,34 @@ export default function ImageConverter() {
                                 accept=".jpg,.jpeg,.png,.heic"
                                 className="hidden"
                             />
-                            <div className="p-4 bg-gray-100 dark:bg-neutral-800 rounded-full group-hover:scale-110 transition-transform">
+                            <div
+                                className="p-4 rounded-full group-hover:scale-110 transition-transform"
+                                style={{ backgroundColor: theme === 'dark' ? '#262626' : '#f3f4f6' }}
+                            >
                                 <Upload className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="text-center">
-                                <p className="font-medium text-gray-900 dark:text-neutral-200">Click to upload</p>
-                                <p className="text-sm text-gray-500 dark:text-neutral-500 mt-1">HEIC, PNG, JPG supported</p>
+                                <p className="font-medium" style={{ color: theme === 'dark' ? '#e5e5e5' : '#111827' }}>Click to upload</p>
+                                <p className="text-sm mt-1" style={{ color: theme === 'dark' ? '#737373' : '#6b7280' }}>HEIC, PNG, JPG supported</p>
                             </div>
                         </div>
 
                         {/* Settings Panel */}
-                        <div className="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-2xl p-6 backdrop-blur-sm transition-colors duration-300">
+                        <div
+                            className="border rounded-2xl p-6 backdrop-blur-sm transition-colors duration-300"
+                            style={{
+                                backgroundColor: theme === 'dark' ? 'rgba(23, 23, 23, 0.5)' : '#ffffff',
+                                borderColor: theme === 'dark' ? '#262626' : '#e5e7eb'
+                            }}
+                        >
                             <div className="flex items-center gap-2 mb-6">
                                 <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                                <h2 className="font-semibold text-gray-900 dark:text-white">Compression Settings</h2>
+                                <h2 className="font-semibold" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>Compression Settings</h2>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-sm text-gray-500 dark:text-neutral-400">Quality</label>
+                                    <label className="text-sm" style={{ color: theme === 'dark' ? '#a3a3a3' : '#6b7280' }}>Quality</label>
                                     <span className="text-sm font-mono text-purple-600 dark:text-purple-400">{quality}%</span>
                                 </div>
                                 <input
@@ -218,9 +234,10 @@ export default function ImageConverter() {
                                     max="100"
                                     value={quality}
                                     onChange={(e) => setQuality(Number(e.target.value))}
-                                    className="w-full h-2 bg-gray-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                    className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                    style={{ backgroundColor: theme === 'dark' ? '#262626' : '#e5e7eb' }}
                                 />
-                                <p className="text-xs text-gray-500 dark:text-neutral-500">
+                                <p className="text-xs" style={{ color: theme === 'dark' ? '#737373' : '#6b7280' }}>
                                     Lower quality = smaller file size.
                                 </p>
                             </div>
@@ -231,10 +248,13 @@ export default function ImageConverter() {
                                 className={`
                   w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all
                   ${!selectedFile
-                                        ? "bg-gray-200 dark:bg-neutral-800 text-gray-400 dark:text-neutral-500 cursor-not-allowed"
+                                        ? "text-gray-400 dark:text-neutral-500 cursor-not-allowed"
                                         : "bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-900/20 active:scale-95"
                                     }
                 `}
+                                style={{
+                                    backgroundColor: !selectedFile ? (theme === 'dark' ? '#262626' : '#e5e7eb') : undefined
+                                }}
                             >
                                 {isProcessing ? (
                                     <span className="animate-pulse">Processing...</span>
@@ -249,13 +269,19 @@ export default function ImageConverter() {
 
                         {/* File Info */}
                         {fileInfo && (
-                            <div className="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-2xl p-4 flex items-center gap-3 transition-colors duration-300">
-                                <div className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+                            <div
+                                className="border rounded-2xl p-4 flex items-center gap-3 transition-colors duration-300"
+                                style={{
+                                    backgroundColor: theme === 'dark' ? 'rgba(23, 23, 23, 0.5)' : '#ffffff',
+                                    borderColor: theme === 'dark' ? '#262626' : '#e5e7eb'
+                                }}
+                            >
+                                <div className="p-2 rounded-lg" style={{ backgroundColor: theme === 'dark' ? '#262626' : '#f3f4f6' }}>
                                     <FileImage className="w-5 h-5 text-gray-500 dark:text-neutral-400" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate text-gray-900 dark:text-white">{fileInfo.name}</p>
-                                    <p className="text-xs text-gray-500 dark:text-neutral-500">{formatSize(fileInfo.size)} • {fileInfo.type}</p>
+                                    <p className="text-sm font-medium truncate" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>{fileInfo.name}</p>
+                                    <p className="text-xs" style={{ color: theme === 'dark' ? '#737373' : '#6b7280' }}>{formatSize(fileInfo.size)} • {fileInfo.type}</p>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -264,7 +290,11 @@ export default function ImageConverter() {
                                         setConvertedUrl(null);
                                         setFileInfo(null);
                                     }}
-                                    className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded text-gray-500 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                                    className="p-1 rounded hover:text-red-500 transition-colors"
+                                    style={{
+                                        color: theme === 'dark' ? '#737373' : '#6b7280',
+                                        backgroundColor: 'transparent' // Hover handled by CSS usually, but let's keep it simple
+                                    }}
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -282,7 +312,14 @@ export default function ImageConverter() {
                         )}
 
                         {!previewUrl ? (
-                            <div className="flex-1 min-h-[400px] bg-gray-100 dark:bg-neutral-900/30 border-2 border-dashed border-gray-300 dark:border-neutral-800 rounded-2xl flex flex-col items-center justify-center text-gray-500 dark:text-neutral-600 transition-colors duration-300">
+                            <div
+                                className="flex-1 min-h-[400px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-colors duration-300"
+                                style={{
+                                    backgroundColor: theme === 'dark' ? 'rgba(23, 23, 23, 0.3)' : '#f3f4f6',
+                                    borderColor: theme === 'dark' ? '#262626' : '#d1d5db',
+                                    color: theme === 'dark' ? '#525252' : '#6b7280'
+                                }}
+                            >
                                 <ImageIcon className="w-16 h-16 opacity-20 mb-4" />
                                 <p>Upload an image to see preview</p>
                             </div>
@@ -291,12 +328,24 @@ export default function ImageConverter() {
                                 {/* Original */}
                                 <div className="flex flex-col gap-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-gray-500 dark:text-neutral-400">Original</span>
-                                        <span className="text-xs bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded text-gray-500 dark:text-neutral-400">
+                                        <span className="text-sm font-medium" style={{ color: theme === 'dark' ? '#a3a3a3' : '#6b7280' }}>Original</span>
+                                        <span
+                                            className="text-xs px-2 py-1 rounded"
+                                            style={{
+                                                backgroundColor: theme === 'dark' ? '#262626' : '#f3f4f6',
+                                                color: theme === 'dark' ? '#a3a3a3' : '#6b7280'
+                                            }}
+                                        >
                                             {fileInfo ? formatSize(fileInfo.size) : ''}
                                         </span>
                                     </div>
-                                    <div className="relative aspect-square bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-800 transition-colors duration-300">
+                                    <div
+                                        className="relative aspect-square rounded-xl overflow-hidden border transition-colors duration-300"
+                                        style={{
+                                            backgroundColor: theme === 'dark' ? '#171717' : '#ffffff',
+                                            borderColor: theme === 'dark' ? '#262626' : '#e5e7eb'
+                                        }}
+                                    >
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={previewUrl}
@@ -321,7 +370,13 @@ export default function ImageConverter() {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="relative aspect-square bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-800 flex items-center justify-center transition-colors duration-300">
+                                    <div
+                                        className="relative aspect-square rounded-xl overflow-hidden border flex items-center justify-center transition-colors duration-300"
+                                        style={{
+                                            backgroundColor: theme === 'dark' ? '#171717' : '#ffffff',
+                                            borderColor: theme === 'dark' ? '#262626' : '#e5e7eb'
+                                        }}
+                                    >
                                         {convertedUrl ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img
@@ -330,7 +385,7 @@ export default function ImageConverter() {
                                                 className="w-full h-full object-contain"
                                             />
                                         ) : (
-                                            <div className="text-gray-500 dark:text-neutral-600 text-sm text-center px-4">
+                                            <div className="text-sm text-center px-4" style={{ color: theme === 'dark' ? '#525252' : '#6b7280' }}>
                                                 {isProcessing ? "Processing..." : "Click 'Convert' to see result"}
                                             </div>
                                         )}

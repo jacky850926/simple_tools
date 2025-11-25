@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from "@monaco-editor/react";
 import mermaid from 'mermaid';
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import {
     Info,
     Code2,
@@ -85,7 +84,15 @@ export default function MermaidEditor() {
     const [showTutorial, setShowTutorial] = useState(false);
     const [showThemes, setShowThemes] = useState(false);
     const [currentTheme, setCurrentTheme] = useState('default');
+
+    // Custom Pan/Zoom State
+    const [zoom, setZoom] = useState(1);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
     const containerRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     // Sync Mermaid theme with global theme
     useEffect(() => {
@@ -121,23 +128,26 @@ export default function MermaidEditor() {
                 const id = `mermaid-svg-${Date.now()}`;
                 const { svg } = await mermaid.render(id, code);
 
-                // Parse SVG to fix dimensions for zooming
+                // Parse SVG to fix dimensions
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(svg, 'image/svg+xml');
                 const svgElement = doc.documentElement;
 
-                // Ensure it fills the container
+                // Ensure it fills the container naturally but respects aspect ratio
                 svgElement.style.width = '100%';
                 svgElement.style.height = '100%';
                 svgElement.style.maxWidth = 'none';
 
-                // Remove explicit width/height attributes if they exist to allow CSS scaling
-                // But keep viewBox for aspect ratio
+                // Remove explicit width/height attributes to allow CSS scaling
                 if (svgElement.hasAttribute('width')) svgElement.removeAttribute('width');
                 if (svgElement.hasAttribute('height')) svgElement.removeAttribute('height');
 
                 setSvg(svgElement.outerHTML);
                 setError('');
+
+                // Reset view on new render? Optional, maybe keep it.
+                // setZoom(1);
+                // setPan({ x: 0, y: 0 });
             } catch (err) {
                 console.error('Mermaid render error:', err);
                 setError('Syntax Error: ' + (err instanceof Error ? err.message : String(err)));
@@ -146,10 +156,55 @@ export default function MermaidEditor() {
         renderDiagram();
     }, [currentTheme, code]);
 
-    const handleDownload = async (format: 'png' | 'svg') => {
-        if (!containerRef.current) return;
+    // Pan/Zoom Handlers
+    const handleWheel = (e: React.WheelEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            const scaleAmount = -e.deltaY * 0.001;
+            const newZoom = Math.min(Math.max(0.1, zoom + scaleAmount), 5);
+            setZoom(newZoom);
+        } else {
+            // Optional: Pan on scroll if not zooming?
+            // For now let's just allow standard scrolling if content is larger, 
+            // but since we are using transform, standard scroll won't work the same.
+            // Let's map wheel to pan if not zooming.
+            setPan(prev => ({
+                x: prev.x - e.deltaX,
+                y: prev.y - e.deltaY
+            }));
+        }
+    };
 
-        const svgElement = containerRef.current.querySelector('svg');
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true);
+        setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (isDragging) {
+            e.preventDefault();
+            setPan({
+                x: e.clientX - dragStart.x,
+                y: e.clientY - dragStart.y
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 5));
+    const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.1));
+    const handleReset = () => {
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+    };
+
+    const handleDownload = async (format: 'png' | 'svg') => {
+        if (!contentRef.current) return;
+
+        const svgElement = contentRef.current.querySelector('svg');
         if (!svgElement) return;
 
         // Get the real size of the SVG content from viewBox
@@ -165,14 +220,12 @@ export default function MermaidEditor() {
             }
         }
 
-        // Fallback to BBox if viewBox is missing or invalid
         if (!width || !height) {
             const bbox = svgElement.getBBox();
             width = bbox.width;
             height = bbox.height;
         }
 
-        // Add padding for the export
         const padding = 20;
         const exportWidth = width + padding * 2;
         const exportHeight = height + padding * 2;
@@ -182,7 +235,6 @@ export default function MermaidEditor() {
             clone.setAttribute('width', `${exportWidth}`);
             clone.setAttribute('height', `${exportHeight}`);
 
-            // Adjust viewBox to include padding
             const currentViewBox = viewBox ? viewBox.split(/\s+|,/).map(Number) : [0, 0, width, height];
             if (currentViewBox.length === 4) {
                 clone.setAttribute('viewBox', `${currentViewBox[0] - padding} ${currentViewBox[1] - padding} ${exportWidth} ${exportHeight}`);
@@ -198,21 +250,16 @@ export default function MermaidEditor() {
             link.click();
             document.body.removeChild(link);
         } else {
-            // PNG Download
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const img = new Image();
 
-            // Scale up for better resolution (Retina quality)
             const scale = 3;
             canvas.width = exportWidth * scale;
             canvas.height = exportHeight * scale;
 
             if (ctx) {
                 ctx.scale(scale, scale);
-                // White background for PNG, or dark if dark mode? 
-                // Usually export is preferred on white/transparent, but let's stick to white for compatibility
-                // or match theme? Let's use white for now as standard.
                 ctx.fillStyle = currentTheme === 'dark' ? '#1e1e1e' : '#ffffff';
                 ctx.fillRect(0, 0, exportWidth, exportHeight);
             }
@@ -326,7 +373,7 @@ export default function MermaidEditor() {
                     </div>
                     <div className="flex-1 pt-2">
                         <Editor
-                            key={globalTheme} // Force re-mount on theme change
+                            key={globalTheme}
                             height="100%"
                             defaultLanguage="markdown"
                             value={code}
@@ -384,46 +431,42 @@ export default function MermaidEditor() {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-hidden relative bg-[url('https://grainy-gradients.vercel.app/noise.svg')] dark:bg-none">
+                    <div
+                        className="flex-1 overflow-hidden relative cursor-grab active:cursor-grabbing transition-colors duration-300"
+                        style={{ backgroundColor: globalTheme === 'dark' ? '#1e1e1e' : '#ffffff' }}
+                        onWheel={handleWheel}
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}
+                        ref={containerRef}
+                    >
                         {error && (
                             <div className="absolute top-4 left-4 right-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg shadow-sm text-sm font-mono whitespace-pre-wrap z-20">
                                 {error}
                             </div>
                         )}
 
-                        <TransformWrapper
-                            initialScale={1}
-                            minScale={0.5}
-                            maxScale={8}
-                            centerOnInit
-                            limitToBounds={false}
-                        >
-                            {({ zoomIn, zoomOut, resetTransform }) => (
-                                <>
-                                    <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-20">
-                                        <button onClick={() => zoomIn()} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Zoom In">
-                                            <ZoomIn size={20} />
-                                        </button>
-                                        <button onClick={() => zoomOut()} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Zoom Out">
-                                            <ZoomOut size={20} />
-                                        </button>
-                                        <button onClick={() => resetTransform()} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Reset View">
-                                            <Maximize size={20} />
-                                        </button>
-                                    </div>
-                                    <TransformComponent
-                                        wrapperClass="w-full h-full"
-                                        contentClass="w-full h-full flex items-center justify-center"
-                                    >
-                                        <div
-                                            ref={containerRef}
-                                            className={`transition-all duration-300 ${error ? 'opacity-50 blur-sm grayscale' : 'opacity-100'} w-full h-full flex items-center justify-center`}
-                                            dangerouslySetInnerHTML={{ __html: svg }}
-                                        />
-                                    </TransformComponent>
-                                </>
-                            )}
-                        </TransformWrapper>
+                        <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-20">
+                            <button onClick={handleZoomIn} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Zoom In">
+                                <ZoomIn size={20} />
+                            </button>
+                            <button onClick={handleZoomOut} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Zoom Out">
+                                <ZoomOut size={20} />
+                            </button>
+                            <button onClick={handleReset} className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300" title="Reset View">
+                                <Maximize size={20} />
+                            </button>
+                        </div>
+
+                        <div
+                            ref={contentRef}
+                            className={`transition-transform duration-100 ease-out origin-center w-full h-full flex items-center justify-center ${error ? 'opacity-50 blur-sm grayscale' : 'opacity-100'}`}
+                            style={{
+                                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
+                            }}
+                            dangerouslySetInnerHTML={{ __html: svg }}
+                        />
                     </div>
                 </div>
             </main>

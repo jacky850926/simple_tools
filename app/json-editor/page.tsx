@@ -273,7 +273,11 @@ export default function Home() {
                 value={rawInput}
                 onChange={(e) => setRawInput(e.target.value)}
                 placeholder="Paste your raw JSON here..."
-                className="w-full h-full bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-4 font-mono text-sm text-gray-900 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-neutral-700"
+                className="w-full h-full border border-gray-200 dark:border-neutral-800 rounded-xl p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-neutral-600"
+                style={{
+                  backgroundColor: theme === 'dark' ? '#1e1e1e' : '#ffffff',
+                  color: theme === 'dark' ? '#d4d4d4' : '#171717'
+                }}
                 spellCheck={false}
               />
               <div className="absolute inset-0 rounded-xl pointer-events-none ring-1 ring-inset ring-gray-900/5 dark:ring-white/5 group-hover:ring-gray-900/10 dark:group-hover:ring-white/10 transition-all" />
