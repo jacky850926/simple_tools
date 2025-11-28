@@ -291,13 +291,14 @@ export default function MermaidEditor() {
     };
 
     return (
-        <div className="flex h-screen flex-col bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
-            <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 shadow-sm z-10 transition-colors duration-300">
+        <div className="min-h-[100dvh] flex flex-col bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
+            <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 shadow-sm z-10 transition-colors duration-300 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
                         <Code2 size={24} />
                     </div>
-                    <h1 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">Mermaid Live Editor</h1>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight hidden sm:block">Mermaid Live Editor</h1>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight sm:hidden">Mermaid</h1>
                 </div>
                 <div className="flex items-center gap-3">
                     {/* Theme Selector */}
@@ -307,7 +308,7 @@ export default function MermaidEditor() {
                             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-md hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors shadow-sm"
                         >
                             <Palette size={16} />
-                            <span>Theme: {THEMES.find(t => t.id === currentTheme)?.name}</span>
+                            <span className="hidden sm:inline">Theme: {THEMES.find(t => t.id === currentTheme)?.name}</span>
                         </button>
                         {showThemes && (
                             <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-gray-100 dark:border-neutral-700 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -335,7 +336,7 @@ export default function MermaidEditor() {
                             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             <Info size={16} />
-                            Templates
+                            <span className="hidden sm:inline">Templates</span>
                         </button>
                         {showTutorial && (
                             <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-gray-100 dark:border-neutral-700 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -364,14 +365,14 @@ export default function MermaidEditor() {
                 </div>
             </header>
 
-            <main className="flex-1 flex overflow-hidden">
+            <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                 {/* Editor Section */}
-                <div className="w-1/2 border-r border-gray-200 dark:border-neutral-800 flex flex-col bg-white dark:bg-neutral-900 transition-colors duration-300">
+                <div className="w-full lg:w-1/2 h-[400px] lg:h-auto border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-neutral-800 flex flex-col bg-white dark:bg-neutral-900 transition-colors duration-300 shrink-0">
                     <div className="bg-gray-50 dark:bg-neutral-800 px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-neutral-800 flex items-center gap-2">
                         <Code2 size={14} />
                         Code Input
                     </div>
-                    <div className="flex-1 pt-2">
+                    <div className="flex-1 pt-2 min-h-0">
                         <Editor
                             key={globalTheme}
                             height="100%"
@@ -393,7 +394,7 @@ export default function MermaidEditor() {
                 </div>
 
                 {/* Preview Section */}
-                <div className="w-1/2 flex flex-col bg-gray-50/50 dark:bg-neutral-900/50 relative transition-colors duration-300">
+                <div className="w-full lg:w-1/2 flex-1 flex flex-col bg-gray-50/50 dark:bg-neutral-900/50 relative transition-colors duration-300 min-h-[400px]">
                     <div className="bg-white dark:bg-neutral-900 px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-neutral-800 flex justify-between items-center shadow-sm z-10">
                         <div className="flex items-center gap-2">
                             <ImageIcon size={14} />
@@ -403,7 +404,8 @@ export default function MermaidEditor() {
                             {error ? (
                                 <span className="text-red-500 flex items-center gap-1 normal-case bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded border border-red-100 dark:border-red-900/30 mr-2">
                                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                    Syntax Error
+                                    <span className="hidden sm:inline">Syntax Error</span>
+                                    <span className="sm:hidden">Error</span>
                                 </span>
                             ) : (
                                 <span className="text-green-600 dark:text-green-400 flex items-center gap-1 normal-case bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-900/30 mr-2">

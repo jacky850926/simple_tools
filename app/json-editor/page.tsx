@@ -180,9 +180,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-200 font-sans selection:bg-blue-500/30 overflow-hidden transition-colors duration-300">
+    <div className="min-h-[100dvh] bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-200 font-sans selection:bg-blue-500/30 flex flex-col transition-colors duration-300">
       {/* Header */}
-      <header className="border-b border-gray-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-300">
+      <header className="border-b border-gray-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-300 shrink-0">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
@@ -198,18 +198,18 @@ export default function Home() {
               className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <History className="w-4 h-4" />
-              <span>History</span>
+              <span className="hidden sm:inline">History</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto p-4 h-[calc(100vh-4rem)] flex flex-col gap-4 relative">
+      <main className="max-w-7xl mx-auto p-4 flex-1 w-full flex flex-col gap-4 relative">
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white/50 dark:bg-neutral-900/50 p-3 rounded-xl border border-gray-200 dark:border-neutral-800 backdrop-blur-sm transition-colors duration-300">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={formatJson}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-blue-900/20 active:scale-95"
@@ -226,7 +226,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
             <button
               onClick={minifyJson}
               className="p-2 text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
@@ -263,7 +263,7 @@ export default function Home() {
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
 
           {/* Left Panel: Raw Input */}
-          <div className="flex flex-col gap-2 min-h-0">
+          <div className="flex flex-col gap-2 h-[500px] lg:h-auto min-h-0">
             <div className="flex items-center justify-between px-2">
               <label className="text-xs font-semibold text-gray-500 dark:text-neutral-500 uppercase tracking-wider">Raw Input</label>
               <span className="text-xs text-gray-600 dark:text-neutral-600">{rawInput.length} chars</span>
@@ -285,7 +285,7 @@ export default function Home() {
           </div>
 
           {/* Right Panel: Monaco Editor */}
-          <div className="flex flex-col gap-2 min-h-0">
+          <div className="flex flex-col gap-2 h-[500px] lg:h-auto min-h-0">
             <div className="flex items-center justify-between px-2">
               <label className="text-xs font-semibold text-gray-500 dark:text-neutral-500 uppercase tracking-wider">Formatted Editor</label>
               {formattedOutput && <span className="text-xs text-gray-600 dark:text-neutral-600">Ready</span>}
@@ -380,7 +380,7 @@ export default function Home() {
         {/* Status Bar / Error Display */}
         {(error || successMessage) && (
           <div className={`
-            fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md border flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300
+            fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md border flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300 max-w-[90vw]
             ${error
               ? "bg-red-50 dark:bg-red-950/80 border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-200"
               : "bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200"
@@ -388,13 +388,13 @@ export default function Home() {
           `}>
             {error ? (
               <>
-                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
-                <span className="font-medium">{error.message}</span>
+                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 shrink-0" />
+                <span className="font-medium truncate">{error.message}</span>
               </>
             ) : (
               <>
-                <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-                <span className="font-medium">{successMessage}</span>
+                <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                <span className="font-medium truncate">{successMessage}</span>
               </>
             )}
           </div>
