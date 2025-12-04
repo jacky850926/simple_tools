@@ -9,7 +9,8 @@ import {
     AlertCircle,
     Check,
     X,
-    FileImage
+    FileImage,
+    FileType
 } from "lucide-react";
 
 import { useTheme } from "../components/ThemeProvider";
@@ -24,6 +25,7 @@ export default function ImageConverter() {
     const [error, setError] = useState<string | null>(null);
     const [fileInfo, setFileInfo] = useState<{ name: string; size: number; type: string } | null>(null);
     const [convertedInfo, setConvertedInfo] = useState<{ size: number } | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,6 +39,62 @@ export default function ImageConverter() {
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Reset state
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        if (convertedUrl) URL.revokeObjectURL(convertedUrl);
+        setConvertedUrl(null);
+        setConvertedInfo(null);
+        setError(null);
+
+        setSelectedFile(file);
+        setFileInfo({
+            name: file.name,
+            size: file.size,
+            type: file.type
+        });
+
+        try {
+            // Handle HEIC files
+            if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+                setIsProcessing(true);
+                const heic2any = (await import('heic2any')).default;
+                const blob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: quality / 100
+                });
+
+                const url = URL.createObjectURL(Array.isArray(blob) ? blob[0] : blob);
+                setPreviewUrl(url);
+                setIsProcessing(false);
+            } else {
+                // Standard images
+                const url = URL.createObjectURL(file);
+                setPreviewUrl(url);
+            }
+        } catch (err: any) {
+            setError("Failed to load image: " + err.message);
+            setIsProcessing(false);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const file = e.dataTransfer.files?.[0];
         if (!file) return;
 
         // Reset state
@@ -165,7 +223,7 @@ export default function ImageConverter() {
                             Image Converter
                         </h1>
                         <p className="text-gray-500 dark:text-neutral-400 mt-1">
-                            Convert HEIC, PNG, JPG to optimized JPG format.
+                            Convert HEIC, WEBP, PNG, GIF, BMP, AVIF to optimized JPG format.
                         </p>
                     </div>
                 </div>
@@ -179,23 +237,26 @@ export default function ImageConverter() {
                         {/* Upload Area */}
                         <div
                             onClick={() => fileInputRef.current?.click()}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
                             className={`
                 border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group
-                ${selectedFile
+                ${selectedFile || isDragging
                                     ? "border-purple-500/50 bg-purple-500/5"
                                     : "hover:border-purple-500/50"
                                 }
               `}
                             style={{
-                                borderColor: selectedFile ? undefined : (theme === 'dark' ? '#404040' : '#d1d5db'),
-                                backgroundColor: selectedFile ? undefined : (theme === 'dark' ? 'transparent' : '#f3f4f6'),
+                                borderColor: (selectedFile || isDragging) ? undefined : (theme === 'dark' ? '#404040' : '#d1d5db'),
+                                backgroundColor: (selectedFile || isDragging) ? undefined : (theme === 'dark' ? 'transparent' : '#f3f4f6'),
                             }}
                         >
                             <input
                                 type="file"
                                 ref={fileInputRef}
                                 onChange={handleFileSelect}
-                                accept=".jpg,.jpeg,.png,.heic"
+                                accept=".jpg,.jpeg,.png,.heic,.webp,.gif,.bmp,.avif,.tiff,.ico"
                                 className="hidden"
                             />
                             <div
@@ -205,8 +266,12 @@ export default function ImageConverter() {
                                 <Upload className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="text-center">
-                                <p className="font-medium" style={{ color: theme === 'dark' ? '#e5e5e5' : '#111827' }}>Click to upload</p>
-                                <p className="text-sm mt-1" style={{ color: theme === 'dark' ? '#737373' : '#6b7280' }}>HEIC, PNG, JPG supported</p>
+                                <p className="font-medium" style={{ color: theme === 'dark' ? '#e5e5e5' : '#111827' }}>
+                                    {isDragging ? "Drop image here" : "Click to upload or drag & drop"}
+                                </p>
+                                <p className="text-sm mt-1" style={{ color: theme === 'dark' ? '#737373' : '#6b7280' }}>
+                                    HEIC, WEBP, PNG, JPG, GIF, BMP, AVIF
+                                </p>
                             </div>
                         </div>
 
